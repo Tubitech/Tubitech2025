@@ -6,13 +6,25 @@ import java.util.Map;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ArmSubsystem extends SubsystemBase{
-    // private SparkMax spark1 = new SparkMax(0, MotorType.kBrushless);
-    // private SparkMax spark2 = new SparkMax(0, MotorType.kBrushless);
+    private final TrapezoidProfile.Constraints constraintsL1 = new TrapezoidProfile.Constraints(10, 10);
+    private final ProfiledPIDController controllerL1 = new ProfiledPIDController(1, 1, 1, constraintsL1, 1);
+    private final ArmFeedforward feedforwardL1 = new ArmFeedforward(1, 1, 1);
+
+    private final TrapezoidProfile.Constraints constraintsL2 = new TrapezoidProfile.Constraints(10, 10);
+    private final ProfiledPIDController controllerL2 = new ProfiledPIDController(1, 1, 1, constraintsL2, 1);
+    private final ArmFeedforward feedforwardL2 = new ArmFeedforward(1, 1, 1);
+
+    private SparkMax spark1 = new SparkMax(0, MotorType.kBrushless);
+    private SparkMax spark2 = new SparkMax(0, MotorType.kBrushless);
 
 
     private DutyCycleEncoder throughbore1 = new DutyCycleEncoder(0);
@@ -26,6 +38,14 @@ public class ArmSubsystem extends SubsystemBase{
     private double y;
     private double theta;
 
+    double targetX = 0;
+    double targetY = 0;
+    public void setTargetX(double x){
+        targetX = x;
+    }
+    public void setTargetY(double y){
+        targetY = y;
+    }
     public ArmSubsystem(){
 
     }
@@ -38,17 +58,20 @@ public class ArmSubsystem extends SubsystemBase{
     @Override
     public void periodic(){
         getGripperPos();
+        setPosition(targetX, targetY);
+
+
     }
     /*Forward Kinematics */
     private void getGripperPos(){
         double a = L1*Math.cos(getFirstJointAngle());
         double b = L1*Math.sin(getFirstJointAngle());
-        theta = getSecondJointAngle() + getSecondJointAngle();
+        theta = getFirstJointAngle() + getSecondJointAngle();
         x = a + L2*Math.cos(theta);
         y = b + L2*Math.sin(theta);
     }
     /*Inverse Kinematics */
-    public double[][] findGripperPos(double desiredx, double desiredy){
+    private double[][] findGripperPos(double desiredx, double desiredy){
         /*q2 pos */
         if (Math.sqrt(x * x + y * y) > (L1 + L2)) {
             return null; // Ulaşılamaz
@@ -78,5 +101,17 @@ public class ArmSubsystem extends SubsystemBase{
         // degrees.put("q2", q2);
         // return degrees;  
     }
-
+    private void setPosition(double desiredX, double desiredY){
+        double[][] radianAngles = findGripperPos(desiredX, desiredY);
+        controllerL1.setGoal(radianAngles[0][0]);
+        controllerL2.setGoal(radianAngles[0][1]);
+        setL1Motor();
+        setL2Motor();
+    }
+    private void setL1Motor(){
+        spark1.setVoltage(controllerL1.calculate(getFirstJointAngle())+feedforwardL1.calculate(controllerL1.getSetpoint().position,controllerL1.getSetpoint().velocity));
+    }
+    private void setL2Motor(){
+        spark2.setVoltage(controllerL2.calculate(getSecondJointAngle())+feedforwardL2.calculate(controllerL2.getSetpoint().position,controllerL2.getSetpoint().velocity));
+    }
 }
