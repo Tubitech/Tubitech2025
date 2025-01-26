@@ -4,6 +4,7 @@ package frc.robot.commands.swervedrive.auto;
 
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.swervedrive.Vision;
+import frc.robot.subsystems.LimelightHelpers;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -33,15 +34,16 @@ public class AlignToAprilTagCommand extends Command {
   public void execute() {
     Pose2d tagPose = Vision.getAprilTagPose(aprilTagId, robotOffset);
 
+    double tx = LimelightHelpers.getTX("limelight");
+
     if (tagPose != null) {
-      double xDistance = tagPose.getX();
       double rotationAngle = tagPose.getRotation().getRadians();
 
-      if (Math.abs(xDistance) < Constants.ALIGN_TOLERANCE) {
+      if (Math.abs(tx) < Constants.ALIGN_TOLERANCE) {
         double rotationSpeed = MathUtil.clamp(rotationAngle * Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, Constants.ROTATION_SPEED);
         swerveSubsystem.drive(new Translation2d(0, 0), rotationSpeed, true);
       } else {
-        double translationVal = MathUtil.clamp(xDistance * Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, Constants.ROTATION_SPEED);
+        double translationVal = MathUtil.clamp(tx * Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, Constants.ROTATION_SPEED);
         double rotationSpeed = MathUtil.clamp(rotationAngle * Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, Constants.ROTATION_SPEED);
         
         swerveSubsystem.drive(new Translation2d(translationVal, 0), rotationSpeed, true);
