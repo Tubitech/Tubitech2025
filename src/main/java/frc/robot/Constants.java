@@ -25,6 +25,10 @@ public final class Constants
   public static final double MAX_SPEED  = Units.feetToMeters(14.5);
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
+  // Swerve auto constants
+  public static final double ALIGN_TOLERANCE = 1.0;
+  public static final double ROTATION_SPEED = 0.5;
+
 //  public static final class AutonConstants
 //  {
 //
