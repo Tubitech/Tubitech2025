@@ -16,7 +16,6 @@ public class AlignToAprilTagCommand extends Command {
 
   private final SwerveSubsystem swerveSubsystem;
   private final Transform2d robotOffset;
-
   private final int aprilTagId;
 
   public AlignToAprilTagCommand(SwerveSubsystem swerveSubsystem, int aprilTagId) {
@@ -36,13 +35,16 @@ public class AlignToAprilTagCommand extends Command {
 
     if (tagPose != null) {
       double xDistance = tagPose.getX();
+      double rotationAngle = tagPose.getRotation().getRadians();
 
       if (Math.abs(xDistance) < Constants.ALIGN_TOLERANCE) {
-        swerveSubsystem.drive(new Translation2d(0, 0), 0, true);
+        double rotationSpeed = MathUtil.clamp(rotationAngle * Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, Constants.ROTATION_SPEED);
+        swerveSubsystem.drive(new Translation2d(0, 0), rotationSpeed, true);
       } else {
         double translationVal = MathUtil.clamp(xDistance * Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, Constants.ROTATION_SPEED);
-        Translation2d translation = new Translation2d(translationVal, 0);
-        swerveSubsystem.drive(translation, 0, true);
+        double rotationSpeed = MathUtil.clamp(rotationAngle * Constants.ROTATION_SPEED, -Constants.ROTATION_SPEED, Constants.ROTATION_SPEED);
+        
+        swerveSubsystem.drive(new Translation2d(translationVal, 0), rotationSpeed, true);
       }
     } else {
       swerveSubsystem.drive(new Translation2d(0, 0), 0, true);
@@ -52,7 +54,7 @@ public class AlignToAprilTagCommand extends Command {
   @Override
   public boolean isFinished() {
     Pose2d tagPose = Vision.getAprilTagPose(aprilTagId, robotOffset);
-    
+
     if (tagPose != null) {
       double xDistance = tagPose.getX();
       return Math.abs(xDistance) < Constants.ALIGN_TOLERANCE;
