@@ -14,7 +14,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ArmSubsystem extends SubsystemBase{
+public class ArmElevatorSubsystem extends SubsystemBase{
     private final TrapezoidProfile.Constraints constraintsL1 = new TrapezoidProfile.Constraints(10, 10);
     private final ProfiledPIDController controllerL1 = new ProfiledPIDController(1, 1, 1, constraintsL1, 1);
     private final ArmFeedforward feedforwardL1 = new ArmFeedforward(1, 1, 1);
@@ -23,16 +23,25 @@ public class ArmSubsystem extends SubsystemBase{
     private final ProfiledPIDController controllerL2 = new ProfiledPIDController(1, 1, 1, constraintsL2, 1);
     private final ArmFeedforward feedforwardL2 = new ArmFeedforward(1, 1, 1);
 
-    private SparkMax spark1 = new SparkMax(0, MotorType.kBrushless);
-    private SparkMax spark2 = new SparkMax(0, MotorType.kBrushless);
-
+    private final SparkMax spark1 = new SparkMax(0, MotorType.kBrushless);
+    private final SparkMax spark2 = new SparkMax(0, MotorType.kBrushless);
 
     private DutyCycleEncoder throughbore1 = new DutyCycleEncoder(0);
     private DutyCycleEncoder throughbore2 = new DutyCycleEncoder(1);
 
+    private final SparkMax elevatorMotor = new SparkMax(0, MotorType.kBrushless);
+    private final TrapezoidProfile.Constraints elevatoConstraints = new TrapezoidProfile.Constraints(10, 10);
+    private final ProfiledPIDController controllerElevator = new ProfiledPIDController(1, 1, 1, elevatoConstraints, 1);
+    private final ElevatorFeedforward elevatorFeedforward = new ElevatorFeedforward(1, 1, 1,1,1);
+    private final DutyCycleEncoder elevatorEncoder = new DutyCycleEncoder(1);
     /*Constants şimdilik burda */
-    private double L1 = 10;
-    private double L2 = 10;
+    private final static double L1 = 10;
+    private final static double L2 = 10;
+    private static final double THETA1_MIN = Math.toRadians(-90.0);
+    private static final double THETA1_MAX = Math.toRadians(0.0);
+    private static final double THETA2_MIN = Math.toRadians(-120.0);
+    private static final double THETA2_MAX = Math.toRadians(120.0);
+
 
     private double x;
     private double y;
@@ -46,7 +55,7 @@ public class ArmSubsystem extends SubsystemBase{
     public void setTargetY(double y){
         targetY = y;
     }
-    public ArmSubsystem(){
+    public ArmElevatorSubsystem(){
 
     }
     private double getFirstJointAngle(){
@@ -54,6 +63,9 @@ public class ArmSubsystem extends SubsystemBase{
     }
     private double getSecondJointAngle(){
         return throughbore2.get();
+    }
+    private double getElevatorPosition(){
+        return elevatorEncoder.get();
     }
     @Override
     public void periodic(){
@@ -89,6 +101,8 @@ public class ArmSubsystem extends SubsystemBase{
         double k2Down = L2 * Math.sin(theta2Down);
         double theta1Down = Math.atan2(y, x) - Math.atan2(k2Down, k1Down);
 
+        theta1Down = clampAngle(theta1Down, THETA1_MIN, THETA1_MAX);
+        theta2Down = clampAngle(theta2Down, THETA2_MIN, THETA2_MAX);
         return new double[][] {
             {theta1Up, theta2Up}, // Dirsek yukarıda
             {theta1Down, theta2Down} // Dirsek aşağıda
@@ -113,5 +127,17 @@ public class ArmSubsystem extends SubsystemBase{
     }
     private void setL2Motor(){
         spark2.setVoltage(controllerL2.calculate(getSecondJointAngle())+feedforwardL2.calculate(controllerL2.getSetpoint().position,controllerL2.getSetpoint().velocity));
+    }
+    private void setElevatorMotor(){
+        elevatorMotor.setVoltage(controllerElevator.calculate(getElevatorPosition())+elevatorFeedforward.calculate(controllerElevator.getSetpoint().velocity));
+    }
+    private double clampAngle(double angle, double minAngle, double maxAngle) {
+        if (angle < minAngle) {
+            angle = minAngle;
+        }
+        if (angle > maxAngle) {
+            angle = maxAngle;
+        }
+        return angle;
     }
 }
