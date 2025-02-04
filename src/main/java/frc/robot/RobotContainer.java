@@ -13,9 +13,13 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.GetCoralFromSource;
+import frc.robot.commands.PutCoralL4;
+import frc.robot.commands.swervedrive.auto.AlignToAprilTagCommand;
 import frc.robot.subsystems.ArmElevatorSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.GripperSubsystem;
@@ -158,6 +162,9 @@ public class RobotContainer
       driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
     }
+
+    driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 0),new GetCoralFromSource(gripperSubsystem, armElevatorSubsystem)) );
+    driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 1),new PutCoralL4(gripperSubsystem, armElevatorSubsystem)) );
 
   }
 

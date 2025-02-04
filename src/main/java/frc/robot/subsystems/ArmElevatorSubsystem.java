@@ -50,6 +50,12 @@ public class ArmElevatorSubsystem extends SubsystemBase{
     double targetX = 0;
     double targetY = 0;
     double targetH = 0;
+    public void setArmAndElevator(double x, double y, double h){
+        setTargetX(x);
+        setTargetY(y);
+        setTargetH(h);
+        while(isInPosition());
+    }
     public void setTargetX(double x){
         targetX = x;
     }

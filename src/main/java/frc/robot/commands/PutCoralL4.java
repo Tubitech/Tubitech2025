@@ -1,15 +1,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.swervedrive.auto.AlignToAprilTagCommand;
 import frc.robot.subsystems.ArmElevatorSubsystem;
 import frc.robot.subsystems.GripperSubsystem;
 
-public class GetCoralFromSource extends Command{
+public class PutCoralL4 extends Command{
     GripperSubsystem gripperSubsystem;
     ArmElevatorSubsystem armElevatorSubsystem;
-    public GetCoralFromSource(GripperSubsystem gripper, ArmElevatorSubsystem armElevator){
+    public PutCoralL4(GripperSubsystem gripper, ArmElevatorSubsystem armElevator){
         gripperSubsystem = gripper;
         armElevatorSubsystem = armElevator;
         addRequirements(gripperSubsystem,armElevatorSubsystem);
@@ -17,11 +15,10 @@ public class GetCoralFromSource extends Command{
     @Override
     public void execute(){
         armElevatorSubsystem.setArmAndElevator(0, 0, 0);
-        gripperSubsystem.pullCoral();
+        gripperSubsystem.pushCoral();
     }
-
     @Override
     public void end(boolean interrupted){
-        gripperSubsystem.hold();
+        gripperSubsystem.stop();
     }
 }

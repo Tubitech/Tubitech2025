@@ -12,7 +12,9 @@ import com.revrobotics.spark.SparkMax;
 public class GripperSubsystem extends SubsystemBase{
     private SparkMax spark1 = new SparkMax(GRIPPER_PORT1, MotorType.kBrushless);
     private SparkMax spark2 = new SparkMax(GRIPPER_PORT2, MotorType.kBrushless);
-    
+
+    public boolean isCoralIn = false;
+    public boolean isAlgIn = false;
     public GripperSubsystem(){}
 
     public void pull() {
@@ -31,4 +33,25 @@ public class GripperSubsystem extends SubsystemBase{
         spark1.set(0);
         spark2.set(0);
     }
+    public void pullCoral(){
+        if(!isCoralIn&!isAlgIn){
+            while(!isSensorDetected()){
+                pull();
+            }
+            isCoralIn = true;
+        }
+    }
+    public void pushCoral(){
+        if (isCoralIn) {
+            while (isSensorDetected()) {
+                push();
+            }
+            isCoralIn = false;
+        }
+        
+    }
+    public boolean isSensorDetected(){
+        return true;
+    }
+    
 }
