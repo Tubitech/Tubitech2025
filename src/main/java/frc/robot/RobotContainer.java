@@ -16,6 +16,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.ArmElevatorSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -84,6 +87,9 @@ public class RobotContainer
                                                                                                                2))
                                                                                .headingWhile(true);
 
+  private final ArmElevatorSubsystem armElevatorSubsystem = new ArmElevatorSubsystem();
+  private final GripperSubsystem gripperSubsystem = new GripperSubsystem();
+  private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */

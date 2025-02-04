@@ -21,7 +21,7 @@ public class AlignToAprilTagCommand extends Command {
 
   public AlignToAprilTagCommand(SwerveSubsystem swerveSubsystem, int aprilTagId) {
     this.swerveSubsystem = swerveSubsystem;
-    this.robotOffset = new Transform2d(new Translation2d(0, 0), new Rotation2d(0)); //Burayı değiştirebilirsiniz. Şimdilik kamera offset'ini (0,0) verdim.
+    this.robotOffset = new Transform2d(new Translation2d(0, 0), new Rotation2d(0)); //Burayı degistirebilirsiniz. Simdilik kamera offsetini (0,0) verdim.
     this.aprilTagId = aprilTagId;
     addRequirements(swerveSubsystem);
   }

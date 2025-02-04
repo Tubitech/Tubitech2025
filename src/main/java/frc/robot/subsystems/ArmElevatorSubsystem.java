@@ -123,12 +123,19 @@ public class ArmElevatorSubsystem extends SubsystemBase{
         double[][] radianAngles = findGripperPos(desiredX, desiredY);
         controllerL1.setGoal(radianAngles[0][0]);
         controllerL2.setGoal(radianAngles[0][1]);
-        setL1Motor();
-        setL2Motor();
+        while (!controllerL1.atGoal()|!controllerL2.atGoal()) {
+            setL1Motor();
+            setL2Motor();
+        }
     }
     private void setElevatorPosition(double height){
         controllerElevator.setGoal(height);
-        setElevatorMotor();
+        while (!controllerElevator.atGoal()) {
+            setElevatorMotor();
+        }
+    }
+    public boolean isInPosition(){
+        return (controllerL1.atGoal()&controllerL2.atGoal()&controllerElevator.atGoal());
     }
     private void setL1Motor(){
         spark1.setVoltage(controllerL1.calculate(getFirstJointAngle())+feedforwardL1.calculate(controllerL1.getSetpoint().position,controllerL1.getSetpoint().velocity));
