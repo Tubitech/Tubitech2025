@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.dtos.EncoderConfig;
 import swervelib.math.Matter;
 
 /**
@@ -24,6 +25,7 @@ public final class Constants
   public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
   public static final double MAX_SPEED  = Units.feetToMeters(14.5);
   // Maximum speed of the robot in meters per second, used to limit acceleration.
+  public static final double DISTANCE_PER_PULSE = 360.0/2048.0;
 
   // Swerve auto constants
   public static final double ALIGN_TOLERANCE = 1.0;
@@ -52,4 +54,28 @@ public final class Constants
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
   }
+
+  public static class GripperConstants {
+    public static final int GRIPPER_PORT1 = 1;
+    public static final int GRIPPER_PORT2 = 2;
+  }
+
+  public static class ClimbConstants {
+    public static final int CLIMB_PORT1 = 4;
+    public static final EncoderConfig CLIMB_ENCODER_CONFIG = new EncoderConfig(1,1,1 );
+
+    private static class ClimbPoses {
+      private static final double CLIMB1_START_POSE = 0;
+      private static final double CLIMB1_TARGET_POSE = 360;
+      private static final double CLIMB2_START_POSE = 0;
+      private static final double CLIMB2_TARGET_POSE = 1080;
+      private static final double CLIMB3_START_POSE = 0;
+      private static final double CLIMB3_TARGET_POSE = 180;
+    }
+  
+    public static final double CLIMB_START_POSE = ClimbPoses.CLIMB1_START_POSE;
+    public static final double CLIMB_TARGET_POSE = ClimbPoses.CLIMB1_TARGET_POSE;
+    
+  }
+
 }
