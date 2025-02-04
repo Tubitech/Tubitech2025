@@ -49,11 +49,15 @@ public class ArmElevatorSubsystem extends SubsystemBase{
 
     double targetX = 0;
     double targetY = 0;
+    double targetH = 0;
     public void setTargetX(double x){
         targetX = x;
     }
     public void setTargetY(double y){
         targetY = y;
+    }
+    public void setTargetH(double h){
+        targetH = h;
     }
     public ArmElevatorSubsystem(){
 
@@ -70,8 +74,8 @@ public class ArmElevatorSubsystem extends SubsystemBase{
     @Override
     public void periodic(){
         getGripperPos();
-        setPosition(targetX, targetY);
-
+        setArmPosition(targetX, targetY);
+        setElevatorPosition(targetH);
 
     }
     /*Forward Kinematics */
@@ -115,12 +119,16 @@ public class ArmElevatorSubsystem extends SubsystemBase{
         // degrees.put("q2", q2);
         // return degrees;  
     }
-    private void setPosition(double desiredX, double desiredY){
+    private void setArmPosition(double desiredX, double desiredY){
         double[][] radianAngles = findGripperPos(desiredX, desiredY);
         controllerL1.setGoal(radianAngles[0][0]);
         controllerL2.setGoal(radianAngles[0][1]);
         setL1Motor();
         setL2Motor();
+    }
+    private void setElevatorPosition(double height){
+        controllerElevator.setGoal(height);
+        setElevatorMotor();
     }
     private void setL1Motor(){
         spark1.setVoltage(controllerL1.calculate(getFirstJointAngle())+feedforwardL1.calculate(controllerL1.getSetpoint().position,controllerL1.getSetpoint().velocity));
