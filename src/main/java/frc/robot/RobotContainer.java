@@ -163,7 +163,7 @@ public class RobotContainer
       driverXbox.rightBumper().onTrue(Commands.none());
     }
 
-    driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 0),new GetCoralFromSource(gripperSubsystem, armElevatorSubsystem)) );
+    driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 0),new GetCoralFromSource(gripperSubsystem, armElevatorSubsystem)).withTimeout(5) );
     driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 1),new PutCoralL4(gripperSubsystem, armElevatorSubsystem)) );
 
   }

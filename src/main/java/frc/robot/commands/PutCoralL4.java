@@ -19,6 +19,11 @@ public class PutCoralL4 extends Command{
     }
     @Override
     public void end(boolean interrupted){
+        if (interrupted) {
+            /* 1.5 seconds exceeded. So now??? */
+
+        }
+        armElevatorSubsystem.setArmAndElevator(0, 0, 0);
         gripperSubsystem.stop();
     }
 }

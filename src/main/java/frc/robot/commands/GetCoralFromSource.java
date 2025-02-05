@@ -22,6 +22,7 @@ public class GetCoralFromSource extends Command{
 
     @Override
     public void end(boolean interrupted){
+        armElevatorSubsystem.setArmAndElevator(0, 0, 0);
         gripperSubsystem.hold();
     }
 }
