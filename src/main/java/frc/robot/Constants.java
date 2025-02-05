@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.lib.drivers.CANDeviceId;
 import frc.robot.dtos.EncoderConfig;
 import swervelib.math.Matter;
 
@@ -19,6 +22,7 @@ import swervelib.math.Matter;
  */
 public final class Constants
 {
+  public static final String kCanBusCanivore = "canivore";
 
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
@@ -61,6 +65,7 @@ public final class Constants
   }
 
   public static class ClimbConstants {
+    public static final CANDeviceId kClimbTalonCanId = new CANDeviceId(0,kCanBusCanivore);
     public static final int CLIMB_PORT1 = 4;
     public static final EncoderConfig CLIMB_ENCODER_CONFIG = new EncoderConfig(1,1,1 );
 
@@ -77,5 +82,10 @@ public final class Constants
     public static final double CLIMB_TARGET_POSE = ClimbPoses.CLIMB1_TARGET_POSE;
     
   }
+  public static final AprilTagFieldLayout kAprilTagLayout = AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
 
+  public static final double kFieldWidthMeters = kAprilTagLayout.getFieldWidth(); // distance between field walls,
+                                                                                    // 8.211m
+  public static final double kFieldLengthMeters = kAprilTagLayout.getFieldLength(); // distance between driver station
+                                                                                      // walls, 16.541m
 }

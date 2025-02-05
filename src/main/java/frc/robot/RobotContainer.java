@@ -21,8 +21,8 @@ import frc.robot.commands.GetCoralFromSource;
 import frc.robot.commands.PutCoralL4;
 import frc.robot.commands.swervedrive.auto.AlignToAprilTagCommand;
 import frc.robot.subsystems.ArmElevatorSubsystem;
-import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.GripperSubsystem;
+import frc.robot.subsystems.climb.ClimbSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -34,6 +34,29 @@ import swervelib.SwerveInputStream;
  */
 public class RobotContainer
 {
+  private ArmElevatorSubsystem buildArmElevatorSubsystem(){
+    return new ArmElevatorSubsystem();
+  }
+  private ClimbSubsystem buildClimbSubsystem(){
+    return new ClimbSubsystem();
+  }
+  private GripperSubsystem buildGripperSubsystem(){
+    return new GripperSubsystem();
+  }
+  public ArmElevatorSubsystem getArmElevator(){
+    return armElevator;
+  }
+  public ClimbSubsystem getClimb(){
+    return climb;
+  }
+  public GripperSubsystem getGripper(){
+    return gripper;
+  }
+  private final ArmElevatorSubsystem armElevator = buildArmElevatorSubsystem();
+  private final ClimbSubsystem climb = buildClimbSubsystem();
+  private final GripperSubsystem gripper = buildGripperSubsystem();
+
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
