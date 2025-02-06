@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.subsystems.TalonFXIO;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.GetCoralFromSource;
 import frc.robot.commands.PutCoralL4;
@@ -34,11 +35,12 @@ import swervelib.SwerveInputStream;
  */
 public class RobotContainer
 {
+  private final RobotState robotState = new RobotState();
   private ArmElevatorSubsystem buildArmElevatorSubsystem(){
     return new ArmElevatorSubsystem();
   }
   private ClimbSubsystem buildClimbSubsystem(){
-    return new ClimbSubsystem();
+    return new ClimbSubsystem(Constants.kClimberConfig, new TalonFXIO(Constants.kClimberConfig), robotState);
   }
   private GripperSubsystem buildGripperSubsystem(){
     return new GripperSubsystem();

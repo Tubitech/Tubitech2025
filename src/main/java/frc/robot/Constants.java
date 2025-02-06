@@ -4,11 +4,17 @@
 
 package frc.robot;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.lib.drivers.CANDeviceId;
+import frc.lib.subsystems.ServoMotorSubsystemConfig;
 import frc.robot.dtos.EncoderConfig;
 import swervelib.math.Matter;
 
@@ -22,7 +28,7 @@ import swervelib.math.Matter;
  */
 public final class Constants
 {
-  public static final String kCanBusCanivore = "canivore";
+  public static final String kCanBusCanivore = "Canivore";
 
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
@@ -68,7 +74,7 @@ public final class Constants
     public static final CANDeviceId kClimbTalonCanId = new CANDeviceId(0,kCanBusCanivore);
     public static final int CLIMB_PORT1 = 4;
     public static final EncoderConfig CLIMB_ENCODER_CONFIG = new EncoderConfig(1,1,1 );
-
+    public static final double kForwardMaxPositionRotations = 132;
     private static class ClimbPoses {
       private static final double CLIMB1_START_POSE = 0;
       private static final double CLIMB1_TARGET_POSE = 360;
@@ -81,6 +87,37 @@ public final class Constants
     public static final double CLIMB_START_POSE = ClimbPoses.CLIMB1_START_POSE;
     public static final double CLIMB_TARGET_POSE = ClimbPoses.CLIMB1_TARGET_POSE;
     
+  }
+  public static final ServoMotorSubsystemConfig kClimberConfig = new ServoMotorSubsystemConfig();
+    static {
+        kClimberConfig.name = "Climber";
+        kClimberConfig.talonCANID = new CANDeviceId(24, kCanBusCanivore);
+        kClimberConfig.kMaxPositionUnits = ClimbConstants.kForwardMaxPositionRotations;
+        kClimberConfig.kMinPositionUnits = 0.0;
+        kClimberConfig.fxConfig.Slot0.kP = 1.0 * 12.0;
+        kClimberConfig.fxConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        kClimberConfig.fxConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        kClimberConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        kClimberConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        // kClimberConfig.fxConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Constants.ClimbConstants.kForwardMaxPositionRotations
+        //         - Constants.ClimbConstants.kPositionToleranceRotations;
+        kClimberConfig.fxConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
+
+        kClimberConfig.fxConfig.Audio.BeepOnBoot = false;
+        kClimberConfig.fxConfig.Audio.BeepOnConfig = false;
+        kClimberConfig.unitToRotorRatio = 1.0;
+
+        kClimberConfig.fxConfig.CurrentLimits.StatorCurrentLimit = 150.0;
+        kClimberConfig.fxConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        // kClimberConfig.fxConfig.ClosedLoopRamps = makeDefaultClosedLoopRampConfig();
+        // kClimberConfig.fxConfig.OpenLoopRamps = makeDefaultOpenLoopRampConfig();
+        kClimberConfig.momentOfInertia = 0.05;
+    }
+
+
+
+  public static class ElevatorConstants{
+    public static final double kElevatorPositioningToleranceInches = 0.03;
   }
   public static final AprilTagFieldLayout kAprilTagLayout = AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
 
