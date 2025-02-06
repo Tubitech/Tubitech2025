@@ -12,9 +12,12 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
-public class ArmElevatorSubsystem extends SubsystemBase{
+public class ArmSubsystem extends SubsystemBase{
     private final TrapezoidProfile.Constraints constraintsL1 = new TrapezoidProfile.Constraints(10, 10);
     private final ProfiledPIDController controllerL1 = new ProfiledPIDController(1, 1, 1, constraintsL1, 1);
     private final ArmFeedforward feedforwardL1 = new ArmFeedforward(1, 1, 1);
@@ -29,11 +32,7 @@ public class ArmElevatorSubsystem extends SubsystemBase{
     private DutyCycleEncoder throughbore1 = new DutyCycleEncoder(0);
     private DutyCycleEncoder throughbore2 = new DutyCycleEncoder(1);
 
-    private final SparkMax elevatorMotor = new SparkMax(0, MotorType.kBrushless);
-    private final TrapezoidProfile.Constraints elevatoConstraints = new TrapezoidProfile.Constraints(10, 10);
-    private final ProfiledPIDController controllerElevator = new ProfiledPIDController(1, 1, 1, elevatoConstraints, 1);
-    private final ElevatorFeedforward elevatorFeedforward = new ElevatorFeedforward(1, 1, 1,1,1);
-    private final DutyCycleEncoder elevatorEncoder = new DutyCycleEncoder(1);
+
     /*Constants şimdilik burda */
     private final static double L1 = 10;
     private final static double L2 = 10;
@@ -49,12 +48,10 @@ public class ArmElevatorSubsystem extends SubsystemBase{
 
     double targetX = 0;
     double targetY = 0;
-    double targetH = 0;
-    public void setArmAndElevator(double x, double y, double h){
+    
+    public void setArm(double x, double y){
         setTargetX(x);
         setTargetY(y);
-        setTargetH(h);
-        while(isInPosition());
     }
     public void setTargetX(double x){
         targetX = x;
@@ -62,10 +59,8 @@ public class ArmElevatorSubsystem extends SubsystemBase{
     public void setTargetY(double y){
         targetY = y;
     }
-    public void setTargetH(double h){
-        targetH = h;
-    }
-    public ArmElevatorSubsystem(){
+    
+    public ArmSubsystem(){
 
     }
     private double getFirstJointAngle(){
@@ -74,14 +69,12 @@ public class ArmElevatorSubsystem extends SubsystemBase{
     private double getSecondJointAngle(){
         return throughbore2.get();
     }
-    private double getElevatorPosition(){
-        return elevatorEncoder.get();
-    }
+    
     @Override
     public void periodic(){
         getGripperPos();
-        setArmPosition(targetX, targetY);
-        setElevatorPosition(targetH);
+        setArmPositionPeriodic(targetX, targetY);
+        
 
     }
     /*Forward Kinematics */
@@ -125,23 +118,18 @@ public class ArmElevatorSubsystem extends SubsystemBase{
         // degrees.put("q2", q2);
         // return degrees;  
     }
-    private void setArmPosition(double desiredX, double desiredY){
+    private void setArmPositionPeriodic(double desiredX, double desiredY){
         double[][] radianAngles = findGripperPos(desiredX, desiredY);
         controllerL1.setGoal(radianAngles[0][0]);
         controllerL2.setGoal(radianAngles[0][1]);
-        while (!controllerL1.atGoal()|!controllerL2.atGoal()) {
-            setL1Motor();
-            setL2Motor();
-        }
+        
+        setL1Motor();
+        setL2Motor();
+
     }
-    private void setElevatorPosition(double height){
-        controllerElevator.setGoal(height);
-        while (!controllerElevator.atGoal()) {
-            setElevatorMotor();
-        }
-    }
+    
     public boolean isInPosition(){
-        return (controllerL1.atGoal()&controllerL2.atGoal()&controllerElevator.atGoal());
+        return (controllerL1.atGoal()&controllerL2.atGoal());
     }
     private void setL1Motor(){
         spark1.setVoltage(controllerL1.calculate(getFirstJointAngle())+feedforwardL1.calculate(controllerL1.getSetpoint().position,controllerL1.getSetpoint().velocity));
@@ -149,9 +137,7 @@ public class ArmElevatorSubsystem extends SubsystemBase{
     private void setL2Motor(){
         spark2.setVoltage(controllerL2.calculate(getSecondJointAngle())+feedforwardL2.calculate(controllerL2.getSetpoint().position,controllerL2.getSetpoint().velocity));
     }
-    private void setElevatorMotor(){
-        elevatorMotor.setVoltage(controllerElevator.calculate(getElevatorPosition())+elevatorFeedforward.calculate(controllerElevator.getSetpoint().velocity));
-    }
+    
     private double clampAngle(double angle, double minAngle, double maxAngle) {
         if (angle < minAngle) {
             angle = minAngle;
@@ -160,5 +146,17 @@ public class ArmElevatorSubsystem extends SubsystemBase{
             angle = maxAngle;
         }
         return angle;
+    }
+
+    public Command setArmPosition(double targetX, double targetY){
+        return runOnce(()->{
+          setArm(targetX, targetY);  
+        });
+    }
+    public Command waitUntilArmFinishes(){
+        return new WaitUntilCommand(()->isInPosition());
+    }
+    public Command setPositionAndWait(double targetX, double targetY){
+        return new ParallelCommandGroup(setArmPosition(targetX, targetY),waitUntilArmFinishes());
     }
 }

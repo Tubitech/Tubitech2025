@@ -18,12 +18,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.subsystems.TalonFXIO;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.GetCoralFromSource;
-import frc.robot.commands.PutCoralL4;
+
 import frc.robot.commands.swervedrive.auto.AlignToAprilTagCommand;
-import frc.robot.subsystems.ArmElevatorSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GripperSubsystem;
-import frc.robot.subsystems.climb.ClimbSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -36,17 +36,23 @@ import swervelib.SwerveInputStream;
 public class RobotContainer
 {
   private final RobotState robotState = new RobotState();
-  private ArmElevatorSubsystem buildArmElevatorSubsystem(){
-    return new ArmElevatorSubsystem();
+  private ArmSubsystem buildArmSubsystem(){
+    return new ArmSubsystem();
+  }
+  private ElevatorSubsystem buildElevatorSubsystem(){
+    return new ElevatorSubsystem();
   }
   private ClimbSubsystem buildClimbSubsystem(){
     return new ClimbSubsystem();
   }
   private GripperSubsystem buildGripperSubsystem(){
-    return new GripperSubsystem();
+    return new GripperSubsystem(robotState);
   }
-  public ArmElevatorSubsystem getArmElevator(){
-    return armElevator;
+  public ArmSubsystem getArm(){
+    return arm;
+  }
+  public ElevatorSubsystem getElevator(){
+    return elevator;
   }
   public ClimbSubsystem getClimb(){
     return climb;
@@ -54,10 +60,10 @@ public class RobotContainer
   public GripperSubsystem getGripper(){
     return gripper;
   }
-  private final ArmElevatorSubsystem armElevator = buildArmElevatorSubsystem();
+  private final ArmSubsystem arm = buildArmSubsystem();
   private final ClimbSubsystem climb = buildClimbSubsystem();
   private final GripperSubsystem gripper = buildGripperSubsystem();
-
+  private final ElevatorSubsystem elevator = buildElevatorSubsystem();
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -116,8 +122,8 @@ public class RobotContainer
                                                                                                                2))
                                                                                .headingWhile(true);
 
-  private final ArmElevatorSubsystem armElevatorSubsystem = new ArmElevatorSubsystem();
-  private final GripperSubsystem gripperSubsystem = new GripperSubsystem();
+  private final ArmSubsystem armElevatorSubsystem = new ArmSubsystem();
+  private final GripperSubsystem gripperSubsystem = new GripperSubsystem(robotState);
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -188,8 +194,8 @@ public class RobotContainer
       driverXbox.rightBumper().onTrue(Commands.none());
     }
 
-    driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 0),new GetCoralFromSource(gripperSubsystem, armElevatorSubsystem)).withTimeout(5) );
-    driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 1),new PutCoralL4(gripperSubsystem, armElevatorSubsystem)) );
+    driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 0)));
+    driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 1) ));
 
   }
 
