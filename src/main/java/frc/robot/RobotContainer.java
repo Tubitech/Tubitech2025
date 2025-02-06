@@ -40,7 +40,7 @@ public class RobotContainer
     return new ArmElevatorSubsystem();
   }
   private ClimbSubsystem buildClimbSubsystem(){
-    return new ClimbSubsystem(Constants.kClimberConfig, new TalonFXIO(Constants.kClimberConfig), robotState);
+    return new ClimbSubsystem();
   }
   private GripperSubsystem buildGripperSubsystem(){
     return new GripperSubsystem();
