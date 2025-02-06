@@ -47,8 +47,8 @@ public class GripperSubsystem extends SubsystemBase{
     public boolean isSensorDetected(){
         return sensor.getRangeInches()>0&&sensor.getRangeInches()<1;
     }
-    public Command pullCoral(){
-        return startEnd(()->pull(),()->{hold();robotState.isCoralIn=true;}).until(()-> isSensorDetected()).withTimeout(1);
+    public Command pullCoral(String direction){
+        return startEnd(()->pull(),()->{hold();robotState.isCoralIn=true;robotState.coralDirection = direction;}).until(()-> isSensorDetected()).withTimeout(1);
     }
     public Command pushCoral(){
         return startEnd(()->push(), ()->{stop();robotState.isCoralIn=false;}).until(()->!isSensorDetected());
