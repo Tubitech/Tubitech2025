@@ -5,6 +5,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
+
+import choreo.auto.AutoFactory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -18,7 +20,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.subsystems.TalonFXIO;
 import frc.robot.Constants.OperatorConstants;
-
+import frc.robot.auto.AutoCommands;
+import frc.robot.commands.GetCoral;
+import frc.robot.commands.PutCoral;
 import frc.robot.commands.swervedrive.auto.AlignToAprilTagCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -26,6 +30,8 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+import java.time.chrono.ThaiBuddhistChronology;
+
 import swervelib.SwerveInputStream;
 
 /**
@@ -59,6 +65,9 @@ public class RobotContainer
   }
   public GripperSubsystem getGripper(){
     return gripper;
+  }
+  public SwerveSubsystem getDrivebase(){
+    return drivebase;
   }
   private final ArmSubsystem arm = buildArmSubsystem();
   private final ClimbSubsystem climb = buildClimbSubsystem();
@@ -122,9 +131,9 @@ public class RobotContainer
                                                                                                                2))
                                                                                .headingWhile(true);
 
-  private final ArmSubsystem armElevatorSubsystem = new ArmSubsystem();
-  private final GripperSubsystem gripperSubsystem = new GripperSubsystem(robotState);
-  private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
+  public PutCoral putCoralCommands = new PutCoral(this, robotState);
+  public GetCoral getCoralCommands = new GetCoral(this);
+  AutoCommands autoCommands = new AutoCommands(this);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
