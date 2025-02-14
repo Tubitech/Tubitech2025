@@ -154,7 +154,7 @@ public class RobotContainer
    */
   private void configureBindings()
   {
-
+    drivebase.getSwerveDrive().addVisionMeasurement(null, 0);
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);

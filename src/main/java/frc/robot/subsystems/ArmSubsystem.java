@@ -86,23 +86,23 @@ public class ArmSubsystem extends SubsystemBase{
         y = b + L2*Math.sin(theta);
     }
     /*Inverse Kinematics */
-    private double[][] findGripperPos(double desiredx, double desiredy){
+    private double[][] findGripperPos(double dx, double dy){
         /*q2 pos */
         if (Math.sqrt(x * x + y * y) > (L1 + L2)) {
             return null; // Ulaşılamaz
         }
 
-        double cosTheta2 = (x * x + y * y - L1 * L1 - L2 * L2) / (2 * L1 * L2);
+        double cosTheta2 = (dx * dx + dy * dy - L1 * L1 - L2 * L2) / (2 * L1 * L2);
         double theta2Up = Math.acos(cosTheta2);  // Dirsek yukarıda
         double theta2Down = -Math.acos(cosTheta2);
 
         double k1Up = L1 + L2 * Math.cos(theta2Up);
         double k2Up = L2 * Math.sin(theta2Up);
-        double theta1Up = Math.atan2(y, x) - Math.atan2(k2Up, k1Up);
+        double theta1Up = Math.atan2(dy, dx) - Math.atan2(k2Up, k1Up);
 
         double k1Down = L1 + L2 * Math.cos(theta2Down);
         double k2Down = L2 * Math.sin(theta2Down);
-        double theta1Down = Math.atan2(y, x) - Math.atan2(k2Down, k1Down);
+        double theta1Down = Math.atan2(dy, dx) - Math.atan2(k2Down, k1Down);
 
         theta1Down = clampAngle(theta1Down, THETA1_MIN, THETA1_MAX);
         theta2Down = clampAngle(theta2Down, THETA2_MIN, THETA2_MAX);
