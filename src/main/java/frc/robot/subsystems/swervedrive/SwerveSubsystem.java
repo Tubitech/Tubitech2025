@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
+import frc.robot.subsystems.LimelightHelpers;
 import frc.robot.subsystems.swervedrive.Vision.Cameras;
 import java.io.File;
 import java.io.IOException;
@@ -161,6 +162,7 @@ public class SwerveSubsystem extends SubsystemBase
   public void periodic()
   {
     // When vision is enabled we must manually update odometry in SwerveDrive
+    updatePoseByAprilTag();
     if (visionDriveTest)
     {
       swerveDrive.updateOdometry();
@@ -169,9 +171,30 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   @Override
-  public void simulationPeriodic()
-  {
+  public void simulationPeriodic() {}
+
+  public LimelightHelpers.PoseEstimate getPoseByAprilTag() {
+    LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+    if(mt1.tagCount == 0) return null;
+
+    if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
+      if(mt1.rawFiducials[0].ambiguity > .7) return null;
+      if(mt1.rawFiducials[0].distToCamera > 3) return null;
+    }
+
+    return mt1;
   }
+
+  public void updatePoseByAprilTag() {
+    LimelightHelpers.PoseEstimate poseEstimate = getPoseByAprilTag();
+
+    if(poseEstimate == null) return;
+
+    getSwerveDrive().addVisionMeasurement(
+            poseEstimate.pose,
+            poseEstimate.timestampSeconds);
+  }
+
 
   /**
    * Setup AutoBuilder for PathPlanner.
