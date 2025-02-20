@@ -8,9 +8,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.lib.drivers.CANDeviceId;
+import frc.robot.dtos.Camera;
 import frc.robot.dtos.EncoderConfig;
 import swervelib.math.Matter;
 
@@ -34,9 +38,15 @@ public final class Constants
   public static final double DISTANCE_PER_PULSE = 360.0/2048.0;
 
   // Swerve auto constants
-  public static final double ALIGN_TOLERANCE = 1.0;
   public static final double ROTATION_SPEED = 0.5;
 
+  public static final double APRILTAG_DISTANCE_TOLERANCE = 0.5;
+  public static final double APRILTAG_ANGLE_TOLERANCE = 0.3; 
+ 
+  public static Camera[] CAMERAS = {
+    new Camera("limelight",  new Transform2d(new Translation2d(0, 0), new Rotation2d(0))),
+    new Camera("limelight2",  new Transform2d(new Translation2d(0, 0), new Rotation2d(0)))
+  };
 //  public static final class AutonConstants
 //  {
 //
@@ -84,13 +94,19 @@ public final class Constants
     public static final double CLIMB_TARGET_POSE = ClimbPoses.CLIMB1_TARGET_POSE;
     
   }
+
   public static class ElevatorConstants{
     public static final double kElevatorPositioningToleranceInches = 0.03;
   }
+
   public static final AprilTagFieldLayout kAprilTagLayout = AprilTagFields.k2025Reefscape.loadAprilTagLayoutField();
 
   public static final double kFieldWidthMeters = kAprilTagLayout.getFieldWidth(); // distance between field walls,
                                                                                     // 8.211m
   public static final double kFieldLengthMeters = kAprilTagLayout.getFieldLength(); // distance between driver station
                                                                                       // walls, 16.541m
+
+  public static class FieldConstants {
+    
+  }
 }

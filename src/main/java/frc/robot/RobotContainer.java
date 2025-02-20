@@ -23,7 +23,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.auto.AutoCommands;
 import frc.robot.commands.GetCoral;
 import frc.robot.commands.PutCoral;
-import frc.robot.commands.swervedrive.auto.AlignToAprilTagCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -203,8 +202,8 @@ public class RobotContainer
       driverXbox.rightBumper().onTrue(Commands.none());
     }
 
-    driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 0)));
-    driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 1) ));
+    //driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 0)));
+    //driverXbox.button(0).onTrue(new ParallelCommandGroup(new AlignToAprilTagCommand(drivebase, 1) ));
 
   }
 
