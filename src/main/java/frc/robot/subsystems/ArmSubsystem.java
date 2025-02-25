@@ -129,7 +129,7 @@ public class ArmSubsystem extends SubsystemBase{
     }
     
     public boolean isInPosition(){
-        return (controllerL1.atGoal()&controllerL2.atGoal());
+        return (controllerL1.atGoal()&&controllerL2.atGoal());
     }
     private void setL1Motor(){
         spark1.setVoltage(controllerL1.calculate(getFirstJointAngle())+feedforwardL1.calculate(controllerL1.getSetpoint().position,controllerL1.getSetpoint().velocity));
