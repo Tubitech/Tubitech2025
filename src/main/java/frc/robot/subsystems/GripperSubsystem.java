@@ -17,8 +17,8 @@ public class GripperSubsystem extends SubsystemBase{
     private Ultrasonic sensor = new Ultrasonic(null, null); // TODO
 
     private RobotState robotState;
-    public GripperSubsystem(RobotState robotState){
-        this.robotState = robotState;
+    public GripperSubsystem(RobotState s){
+        robotState = s;
     }
 
     public void pull() {

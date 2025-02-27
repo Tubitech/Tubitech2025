@@ -13,14 +13,14 @@ public class LedSubsystem extends SubsystemBase {
     private static final int ledCount = 4;  // TODO set this led count
     private AddressableLEDBuffer buffer = new AddressableLEDBuffer(ledCount);
     int lstval = -1;
-    LedSubsystem(){
+    public LedSubsystem(){
         led.setLength(buffer.getLength());
         led.start();
     }
     
     @Override
     public void periodic(){
-        // 24 olasilik;
+        // 5 olasilik;
         led.setData(buffer);
     }
 
@@ -30,6 +30,6 @@ public class LedSubsystem extends SubsystemBase {
             return;
         lstval = val;
         for (int i = 0; i < ledCount; i++)
-            buffer.setRGB(i, (val % 3) * 255 / 2, ((val / 3) % 3) * 255 / 2, (val / 9) * 255 / 2);
+            buffer.setHSV(i, 360 / 5 * i, 50, 100);
     }
 }

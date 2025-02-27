@@ -89,7 +89,7 @@ public class ElevSubsystem extends SubsystemBase {
     }
 
     public double getPos(){
-        return 0; // !!! TODO return a encoder value
+        return elev1.getPosition().getValue().in(Radians); // !!! TODO return a encoder value
     }
 
     private void setMotor(){
@@ -104,8 +104,9 @@ public class ElevSubsystem extends SubsystemBase {
     }
 
     public Command setElevPosition(double targetP){
+        double targetR = targetP / 180 * Math.PI;
         return runOnce(() -> {
-          setElev(targetP);  
+          setElev(targetR);  
         });
     }
     public Command waitUntilArmFinishes(){

@@ -21,23 +21,18 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.ElevSubsystem;
+import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.LedSubsystem;
+import frc.robot.subsystems.StateChanger;
 
 import java.io.File;
 import swervelib.SwerveInputStream;
 
-/**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a "declarative" paradigm, very
- * little robot logic should actually be handled in the {@link Robot} periodic
- * methods (other than the scheduler calls).
- * Instead, the structure of the robot (including subsystems, commands, and
- * trigger mappings) should be declared here.
- */
 public class RobotContainer {
 
-    public RobotState RobState;
+    public RobotState state;
 
     public final CommandXboxController driverXbox = new CommandXboxController(0);
     private final SwerveSubsystem drivebase = new SwerveSubsystem(
@@ -45,12 +40,11 @@ public class RobotContainer {
 
     private final ArmSubsystem arm = new ArmSubsystem();
     private final ElevSubsystem elev = new ElevSubsystem();
-    //private final ElevSubsystem led = new LedSubsystem();
+    private final LedSubsystem led = new LedSubsystem();
+    private final GripperSubsystem gripper = new GripperSubsystem(state);
+    private final ClimbSubsystem climb = new ClimbSubsystem();
+    private final StateChanger stateChanger = new StateChanger(state, arm, elev, gripper, climb, led);
     
-    /**
-     * Converts driver input into a field-relative ChassisSpeeds that is controlled
-     * by angular velocity.
-     */
     SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
             () -> driverXbox.getLeftY() * -1,
             () -> driverXbox.getLeftX() * -1)
@@ -60,9 +54,6 @@ public class RobotContainer {
             .scaleRotation(0.1)
             .allianceRelativeControl(true);
 
-    /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
     public RobotContainer() {
         // Configure the trigger bindings
         configureBindings();
@@ -70,19 +61,6 @@ public class RobotContainer {
         NamedCommands.registerCommand("test", Commands.print("I EXIST"));
     }
 
-    /**
-     * Use this method to define your trigger->command mappings. Triggers can be
-     * created via the
-     * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-     * an arbitrary predicate, or via the
-     * named factories in
-     * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses
-     * for
-     * {@link CommandXboxController
-     * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
-     * controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick
-     * Flight joysticks}.
-     */
     private void configureBindings() {
         Command driveFieldOrientedAngularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
 
@@ -107,14 +85,21 @@ public class RobotContainer {
     }
 
     private void configureStateBindings(){
+        driverXbox.leftTrigger().onTrue(stateChanger.changeAlgae(false));
+        driverXbox.rightTrigger().onTrue(stateChanger.changeAlgae(true));
 
+        driverXbox.leftBumper().onTrue(stateChanger.changeAlkoy(false));
+        driverXbox.rightBumper().onTrue(stateChanger.changeAlkoy(true));
+
+        driverXbox.povLeft().onTrue(stateChanger.changeLR(true));
+        driverXbox.povRight().onTrue(stateChanger.changeLR(false));
+
+        driverXbox.a().onTrue(stateChanger.execute(0));
+        driverXbox.b().onTrue(stateChanger.execute(1));
+        driverXbox.x().onTrue(stateChanger.execute(2));
+        driverXbox.y().onTrue(stateChanger.execute(3));
     }
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
     public Command getAutonomousCommand() {
         // An example command will be run in autonomous
         return drivebase.getAutonomousCommand("New Auto");

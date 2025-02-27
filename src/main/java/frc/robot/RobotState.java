@@ -6,36 +6,23 @@ public class RobotState {
     public String coralDirection = "v";
 
     public enum State1{
-        None,
         al,
         koy
     }
 
     public enum State2{
-        None,
         coral,
         alg
     }
 
     public enum State3{
-        None,
-        durum1,
-        durum2,
-        durum3
+        sol,
+        sag
     }
 
-    public enum State4{
-        None,
-        L1,
-        L2,
-        L3,
-        L4
-    }
-
-    public State1 alkoy = State1.None;
-    public State2 coralg = State2.None;
-    public State3 special = State3.None;
-    public State4 level = State4.None;
+    public State1 alkoy = State1.al;
+    public State2 coralg = State2.coral;
+    public State3 yon = State3.sol;
 
 
     public boolean isCoralAvailable(){
@@ -46,13 +33,12 @@ public class RobotState {
     }
 
     public int getint(){
-        if (alkoy == RobotState.State1.None)
-            coralg = RobotState.State2.None;
-        if (coralg == RobotState.State2.None)
-            special = RobotState.State3.None;
-        if (special == RobotState.State3.None)
-            level = RobotState.State4.None;
-        int magicallist[][] = { // also the line number in states.txt
+        int a = 0;
+        if(alkoy == State1.koy) a += 1;
+        if(coralg == State2.coral) a += 2;
+        if(a == 3 && yon == State3.sag) a += 1;
+        return a;
+        /*int magicallist[][] = { // also the line number in states.txt
             {1, 10, -1, -1},
              { 2, 6, -1, -1 },
               { 3, 4, 5, -1},
@@ -105,6 +91,6 @@ public class RobotState {
         }else if (level == State4.L4){
             pnt = magicallist[pnt][3];
         }
-        return pnt;
+        return pnt;*/
     }
 }
